@@ -59,38 +59,52 @@ export default function Home() {
             <Link href="#pricing" className="text-sm font-medium hover:text-primary">
               Pricing
             </Link>
-            <Link href="/dashboard">
-              <Button variant="default" size="sm">
-                Dashboard
-              </Button>
-            </Link>
             {isAuthenticated ? (
+              <>
+                <Link href="/dashboard">
+                  <Button variant="default" size="sm">
+                    Dashboard
+                  </Button>
+                </Link>
+                <Link href="/settings">
+                  <Button variant="outline" size="sm">
+                    Settings
+                  </Button>
+                </Link>
                 <button
-                  onClick={() => {
-                    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
-                    setIsAuthenticated(false);
-                    router.push('/login');
+                  onClick={async () => {
+                    try {
+                      await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        credentials: 'include'
+                      });
+                      setIsAuthenticated(false);
+                      router.push('/login');
+                    } catch (error) {
+                      console.error('Logout failed:', error);
+                    }
                   }}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors"
                 >
                   Logout
                 </button>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/signup"
-                    className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  >
-                    Sign up
-                  </Link>
-                </>
-              )}
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
             <ThemeToggle />
           </nav>
         </div>

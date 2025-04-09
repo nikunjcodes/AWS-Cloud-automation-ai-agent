@@ -1,6 +1,5 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 
 export interface IUser extends Document {
   email: string;
@@ -10,13 +9,16 @@ export interface IUser extends Document {
     accessKey: string | null;
     secretKey: string | null;
     region: string;
+    amiArn?: string;
+    keyPairName?: string;
+    securityGroupId?: string;
   };
+  awsRoleArn?: string;
   createdAt: Date;
   matchPassword(enteredPassword: string): Promise<boolean>;
-  getSignedToken(): string;
 }
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
   email: {
     type: String,
     required: [true, 'Please provide an email'],
@@ -48,13 +50,30 @@ const UserSchema = new mongoose.Schema({
     region: {
       type: String,
       default: 'us-east-1'
+    },
+    amiArn: {
+      type: String,
+      default: null
+    },
+    keyPairName: {
+      type: String,
+      default: null
+    },
+    securityGroupId: {
+      type: String,
+      default: null
     }
+  },
+  awsRoleArn: {
+    type: String,
+    trim: true,
+    default: null
   },
   createdAt: {
     type: Date,
     default: Date.now
   }
-});
+}, { timestamps: true });
 
 // Encrypt password using bcrypt
 UserSchema.pre('save', async function(next) {
@@ -71,11 +90,6 @@ UserSchema.methods.matchPassword = async function(enteredPassword: string): Prom
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// Generate JWT token
-UserSchema.methods.getSignedToken = function(): string {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET || 'your-secret-key', {
-    expiresIn: '30d'
-  });
-};
-
-export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema); 
+// Create and export the model
+const User = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+export default User; 

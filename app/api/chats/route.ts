@@ -6,16 +6,24 @@ import { verifyToken } from '@/lib/auth';
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
-    const user = await verifyToken(request);
+    const token = request.cookies.get('token')?.value;
     
-    if (!user) {
+    if (!token) {
       return NextResponse.json(
         { success: false, message: 'Not authorized' },
         { status: 401 }
       );
     }
 
-    const chats = await Chat.find({ user: user._id })
+    const decoded = await verifyToken(token);
+    if (!decoded) {
+      return NextResponse.json(
+        { success: false, message: 'Not authorized' },
+        { status: 401 }
+      );
+    }
+
+    const chats = await Chat.find({ user: decoded.id })
       .sort({ updatedAt: -1 })
       .select('title updatedAt');
     
@@ -32,9 +40,17 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
-    const user = await verifyToken(request);
+    const token = request.cookies.get('token')?.value;
     
-    if (!user) {
+    if (!token) {
+      return NextResponse.json(
+        { success: false, message: 'Not authorized' },
+        { status: 401 }
+      );
+    }
+
+    const decoded = await verifyToken(token);
+    if (!decoded) {
       return NextResponse.json(
         { success: false, message: 'Not authorized' },
         { status: 401 }
@@ -44,7 +60,7 @@ export async function POST(request: NextRequest) {
     const { title } = await request.json();
     
     const chat = await Chat.create({
-      user: user._id,
+      user: decoded.id,
       title: title || 'New Conversation',
       messages: []
     });

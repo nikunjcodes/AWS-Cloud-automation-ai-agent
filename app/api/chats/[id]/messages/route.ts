@@ -13,9 +13,17 @@ export async function POST(
 ) {
   try {
     await connectDB();
-    const user = await verifyToken(request);
+    const token = request.cookies.get('token')?.value;
     
-    if (!user) {
+    if (!token) {
+      return NextResponse.json(
+        { success: false, message: 'Not authorized' },
+        { status: 401 }
+      );
+    }
+
+    const decoded = await verifyToken(token);
+    if (!decoded) {
       return NextResponse.json(
         { success: false, message: 'Not authorized' },
         { status: 401 }
@@ -31,7 +39,7 @@ export async function POST(
       );
     }
     
-    const chat = await Chat.findOne({ _id: params.id, user: user._id });
+    const chat = await Chat.findOne({ _id: params.id, user: decoded.id });
     
     if (!chat) {
       return NextResponse.json(
@@ -48,11 +56,53 @@ export async function POST(
     });
     
     // Extract previous conversation for context
-    const previousMessages = chat.messages.slice(-10).map(msg => msg.content);
+    const previousMessages = chat.messages.slice(-10).map((msg: { content: string }) => msg.content);
     
     // Call the AI service to get a response
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const prompt = `Previous conversation: ${previousMessages.join('\n')}\n\nUser: ${content}\n\nAssistant:`;
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const systemPrompt = `You are an AWS Cloud Infrastructure expert assistant. Your role is to help users with:
+
+1. AWS Service Selection and Configuration
+   - EC2 (Compute)
+   - RDS (Database)
+   - S3 (Storage)
+   - VPC (Networking)
+   - IAM (Security)
+   - CloudWatch (Monitoring)
+
+2. Infrastructure Design
+   - High availability
+   - Scalability
+   - Security best practices
+   - Cost optimization
+
+3. Implementation Guidance
+   - Step-by-step deployment instructions
+   - AWS CLI commands
+   - CloudFormation templates
+   - Best practices
+
+When responding:
+- Keep responses clear and concise
+- Focus on practical, actionable advice
+- Use simple language that's easy to understand
+- When mentioning EC2, RDS, or S3, encourage users to click the highlighted service block above for detailed management options
+- Provide specific AWS service recommendations
+- Include relevant AWS CLI commands or console steps
+- Consider security and cost implications
+
+Example:
+User: I need to host a web application
+AI: For hosting a web application on AWS, I recommend:
+1. EC2 for compute resources
+2. RDS for database
+3. S3 for static assets
+4. CloudFront for CDN
+5. Route 53 for DNS
+
+Click the highlighted EC2, RDS, and S3 blocks above to manage these services directly. Would you like me to provide specific configuration details for any of these services?`;
+
+    const prompt = `${systemPrompt}\n\nPrevious conversation: ${previousMessages.join('\n')}\n\nUser: ${content}\n\nAssistant:`;
     
     const result = await model.generateContent(prompt);
     const response = await result.response;
