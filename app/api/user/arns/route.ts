@@ -5,11 +5,17 @@ import { connectToDatabase } from '@/lib/db';
 export async function GET(req: Request) {
   try {
     // 1. Verify Authentication
-    const token = req.headers.get('cookie')?.split('token=')[1]?.split(';')[0];
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized: No token provided' }, { status: 401 });
+    const cookies = req.headers.get('cookie');
+    if (!cookies) {
+      return NextResponse.json({ error: 'Unauthorized: No cookies found' }, { status: 401 });
     }
 
+    const tokenMatch = cookies.match(/token=([^;]+)/);
+    if (!tokenMatch) {
+      return NextResponse.json({ error: 'Unauthorized: No token found in cookies' }, { status: 401 });
+    }
+
+    const token = tokenMatch[1];
     const decoded = await verifyToken(token);
     if (!decoded) {
       return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });

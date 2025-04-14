@@ -73,9 +73,16 @@ export const verifyTokenAndGetUser = async (token: string) => {
 };
 
 export async function verifyToken(token: string): Promise<any> {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    console.error('JWT_SECRET environment variable is not defined.');
+    return null;
+  }
+
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-    return decoded;
+    const secretKey = new TextEncoder().encode(secret);
+    const { payload } = await jwtVerify(token, secretKey);
+    return payload;
   } catch (error) {
     console.error('Token verification failed:', error);
     return null;
