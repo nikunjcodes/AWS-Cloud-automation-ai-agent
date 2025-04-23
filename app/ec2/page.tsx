@@ -90,6 +90,8 @@ Popular Instance Types:
 What would you like to do?`
     }
   ]);
+  const [url, setUrl] = useState("")
+  const [uploadLink, setUploadLink] = useState(false)
   const [chatInput, setChatInput] = useState("");
   const [formattedMessages, setFormattedMessages] = useState<{ [key: number]: string }>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -215,6 +217,8 @@ What would you like to do?`
 
       const data = await response.json()
       if (data.success) {
+        setUploadLink(true);
+        setUrl(data.url);
         toast({
           title: "Success",
           description: "EC2 instance deployed successfully",
@@ -400,6 +404,24 @@ What would you like to do?`
             >
               {isLoading ? "Deploying..." : "Deploy EC2 Instance"}
             </Button>
+            {
+              uploadLink && (
+                <>
+                  <Button 
+                    onClick={() => window.open(url, '_blank')}
+                    className="mt-4 w-full"
+                  >
+                    Connect to CLI
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Open the URL in AWS account Owner's account
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Copy URL: {url}
+                  </p>
+                </>
+              )
+            }
           </CardContent>
         </Card>
 
@@ -514,9 +536,7 @@ What would you like to do?`
               </div>
             </div>
             <Button 
-              onClick={calculatePricing}
-              disabled={isCalculating}
-              className="w-full"
+             
             >
               {isCalculating ? "Calculating..." : "Calculate Pricing"}
             </Button>
