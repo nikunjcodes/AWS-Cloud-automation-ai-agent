@@ -9,6 +9,9 @@ import User from '@/models/User';
 const ec2Client = new EC2Client({
   region: process.env.AWS_REGION || 'us-east-1'
 });
+interface decode{
+  id: string
+}
 
 const SYSTEM_PROMPT = `You are an AI assistant specialized in Amazon EC2 (Elastic Compute Cloud). Your role is to help users with:
 
@@ -271,11 +274,13 @@ export async function POST(req: Request) {
 
     // Get user's AWS credentials
     await connectDB();
+   
     const user = await User.findById(decoded.id);
     if (!user) {
       return NextResponse.json(
         { error: 'User not found', message: 'Please log in again' },
         { status: 404 }
+      );
       );
     }
 

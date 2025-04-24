@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation"
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
-// Configure marked options
+
 marked.setOptions({
   breaks: true,
   gfm: true
@@ -59,11 +59,10 @@ export default function ChatPage() {
 
   useEffect(() => {
     loadUserProfile();
-    loadChats();
   }, []);
 
   useEffect(() => {
-    // Format messages when they change
+    
     const formatMessages = async () => {
       const formatted: { [key: number]: string } = {};
       for (let i = 0; i < messages.length; i++) {
@@ -96,19 +95,7 @@ export default function ChatPage() {
     }
   };
 
-  const loadChats = async () => {
-    try {
-      const response = await fetch('/api/chat/history', {
-        credentials: 'include'
-      });
-      const data = await response.json();
-      if (data.success) {
-        setChats(data.chats);
-      }
-    } catch (err) {
-      console.error('Failed to load chat history:', err);
-    }
-  };
+
 
   const loadMessages = async (chatId: string) => {
     try {
@@ -195,7 +182,7 @@ export default function ChatPage() {
     try {
       let chatId = currentChat;
       
-      // If no chat is selected, create a new one
+      
       if (!chatId) {
         const newChatResponse = await fetch('/api/chats', {
           method: 'POST',
@@ -228,7 +215,7 @@ export default function ChatPage() {
       if (data.success) {
         setMessages(prev => [...prev, data.message]);
         
-        // Check for AWS services in the response and highlight the corresponding box
+       
         const responseText = data.message.content.toLowerCase();
         if (responseText.includes('ec2')) {
           setHighlightedService('EC2');
@@ -240,7 +227,7 @@ export default function ChatPage() {
           setHighlightedService(null);
         }
         
-        // Update chat list with new title if this is the first message
+        
         if (messages.length === 1) {
           const updatedChats = chats.map(chat =>
             chat._id === chatId ? { ...chat, title: data.title } : chat
@@ -363,7 +350,7 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-screen">
-      {/* Chat History Sidebar */}
+     
       <div className="w-64 bg-card border-r">
         <div className="p-4">
           <Button
@@ -405,7 +392,7 @@ export default function ChatPage() {
         </ScrollArea>
       </div>
 
-      {/* Main Chat Area */}
+   
       <div className="flex-1 flex flex-col">
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-3xl font-bold tracking-tight">AI Assistant</h2>
@@ -424,7 +411,7 @@ export default function ChatPage() {
         </div>
 
         <div className="flex-1 p-4 space-y-4">
-          {/* Service Cards */}
+     
           <div className="grid grid-cols-3 gap-4 mb-4">
             {services.map((service) => (
               <Card 

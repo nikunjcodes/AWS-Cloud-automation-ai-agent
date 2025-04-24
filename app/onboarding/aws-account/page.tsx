@@ -41,6 +41,18 @@ export default function AwsAccountCheckPage() {
               <p>
                 To use CloudAI Assistant's deployment features, you'll need an AWS account. AWS offers a generous Free Tier for new users.
               </p>
+              
+              {/* YouTube Video Embed */}
+              <div className="w-full aspect-video rounded-lg overflow-hidden my-4">
+                <iframe
+                  src="https://www.youtube.com/embed/ne8LrbCzW0Q"
+                  title="AWS Account Creation Tutorial"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </div>
+
               <ol className="list-decimal list-inside space-y-2">
                 <li>
                   Go to the <a href="https://aws.amazon.com/free/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">AWS Free Tier page</a>.

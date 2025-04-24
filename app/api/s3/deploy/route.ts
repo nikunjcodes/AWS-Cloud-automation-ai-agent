@@ -47,7 +47,12 @@ export async function POST(request: NextRequest) {
     }
 
     // 5. Return Success Response
-    return NextResponse.json({ success: true, message: 'S3 deployment initiated successfully', data: deployData });
+    return NextResponse.json({ 
+      success: true, 
+      message: 'S3 deployment initiated successfully', 
+      data: deployData,
+      url: "https://us-east-1.console.aws.amazon.com/s3/buckets?region=us-east-1&bucketType=general" // AWS S3 Console URL
+    });
 
   } catch (error: any) {
     console.error('S3 Deploy API Error:', error);

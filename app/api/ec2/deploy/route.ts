@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const params = await request.json();
     const { instanceType, keyName } = params;
     const imageId = "ami-0f561d16f3799be82";
-    const securityGroup = "sg-018a9d92eaaf8f5bc";
+    const securityGroup = "sg-05d8a3314c0e0cf91";
 
     // Basic validation (can be more extensive)
     if (!instanceType || !keyName) {
@@ -56,7 +56,8 @@ export async function POST(request: NextRequest) {
     }
 
     // 5. Return Success Response
-    return NextResponse.json({ success: true, message: 'EC2 deployment initiated successfully', data: deployData });
+    return NextResponse.json({ success: true, message: 'EC2 deployment initiated successfully', data: deployData , 
+      url:"https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#Instances:"});
 
   } catch (error: any) {
     console.error('EC2 Deploy API Error:', error);

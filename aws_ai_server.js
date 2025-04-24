@@ -8,7 +8,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 const DEPLOYMENT_API_URL = "https://p8j8jwxfa0.execute-api.us-east-1.amazonaws.com/prod/AUTOMATION-MASTER-LAMBDA";
 
-// ✅ Replaced: Calls deployment API instead of AWS SDK
+
 async function deployEC2(params) {
   try {
     const response = await fetch(DEPLOYMENT_API_URL, {

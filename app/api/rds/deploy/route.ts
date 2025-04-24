@@ -46,13 +46,8 @@ export async function POST(request: NextRequest) {
       AutoMinorVersionUpgrade: true,
       Port: 3306,
       EnableIAMDatabaseAuthentication: false,
-      DeletionProtection: false,
-      Tags: [
-        {
-          Key: "Name",
-          Value: dbName,
-        }
-      ]
+      DeletionProtection: false
+    
     };
     
     

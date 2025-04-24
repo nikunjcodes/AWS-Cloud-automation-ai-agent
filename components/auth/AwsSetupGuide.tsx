@@ -55,7 +55,7 @@ export function AwsSetupGuide({ onArnSaved }: AwsSetupGuideProps) {
 
       if (data.success) {
         toast({ title: 'Success!', description: 'AWS Role ARN saved successfully.' });
-        onArnSaved(); // Notify parent component
+        onArnSaved();
       } else {
         throw new Error(data.error || 'Failed to save ARN');
       }
@@ -169,25 +169,41 @@ export function AwsSetupGuide({ onArnSaved }: AwsSetupGuideProps) {
             </ol>
           </div>
 
-          <div className="space-y-2 pt-4 border-t">
-            <label htmlFor="roleArn" className="text-lg font-semibold">Paste your Role ARN here:</label>
-            <div className="flex gap-2">
-               <Input
-                 id="roleArn"
-                 type="text"
-                 value={roleArn}
-                 onChange={(e) => setRoleArn(e.target.value)}
-                 placeholder="arn:aws:iam::123456789012:role/AutomationCrossAccountRole"
-                 className="font-mono"
-                 disabled={isLoading}
-               />
-               <Button onClick={handleSaveArn} disabled={isLoading || !roleArn.trim()}>
-                 {isLoading ? 'Saving...' : 'Save & Connect AWS'}
-               </Button>
+          <div className="space-y-4 pt-4 border-t">
+            <div className="aspect-video w-full max-w-2xl mx-auto">
+              <iframe 
+                width="100%" 
+                height="100%" 
+                src="https://www.youtube.com/embed/ubrE4xq9_9c?si=rR_NeUEcJ7T6vXmv" 
+                title="YouTube video player" 
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                referrerPolicy="strict-origin-when-cross-origin" 
+                allowFullScreen
+                className="rounded-lg"
+              ></iframe>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Ensure you paste the full ARN copied from your AWS account.
-            </p>
+
+            <div className="space-y-2">
+              <label htmlFor="roleArn" className="text-lg font-semibold">Paste your Role ARN here:</label>
+              <div className="flex gap-2">
+                 <Input
+                   id="roleArn"
+                   type="text"
+                   value={roleArn}
+                   onChange={(e) => setRoleArn(e.target.value)}
+                   placeholder="arn:aws:iam::123456789012:role/AutomationCrossAccountRole"
+                   className="font-mono"
+                   disabled={isLoading}
+                 />
+                 <Button onClick={handleSaveArn} disabled={isLoading || !roleArn.trim()}>
+                   {isLoading ? 'Saving...' : 'Save & Connect AWS'}
+                 </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Ensure you paste the full ARN copied from your AWS account.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
