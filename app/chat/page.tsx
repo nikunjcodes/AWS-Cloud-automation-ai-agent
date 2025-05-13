@@ -312,6 +312,22 @@ export default function ChatPage() {
       path: '/s3',
       color: 'bg-orange-500/10 hover:bg-orange-500/20',
       borderColor: 'border-orange-500/20 hover:border-orange-500/40'
+    },
+    {
+      name: 'Aws S3',
+      description: 'Deploy Static Websites',
+      icon: Cloud,
+      path: '/deploy',
+      color: 'bg-purple-500/10 hover:bg-purple-500/20',
+      borderColor: 'border-purple-500/20 hover:border-purple-500/40'
+    },
+    {
+      name: 'Aws Amplify',
+      description: 'Deploy Applications from Github',
+      icon: Code2,
+      path: '/amplify',
+      color: 'bg-pink-500/10 hover:bg-pink-500/20',
+      borderColor: 'border-pink-500/20 hover:border-pink-500/40'
     }
   ];
 
@@ -437,7 +453,7 @@ export default function ChatPage() {
             ))}
           </div>
 
-          <Card className="h-[calc(100vh-320px)] bg-card/60 border-primary/10 hover:border-primary/30 transition-all duration-300">
+          <Card className="h-[calc(100vh-320px)] bg-card/60  hover:border-primary/30 transition-all duration-300">
             <CardHeader className="p-4">
               <CardTitle className="text-xl">Cloud Automation Assistant</CardTitle>
               <CardDescription>

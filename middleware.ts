@@ -14,10 +14,12 @@ const protectedPaths = [
   '/ec2', 
   '/s3', 
   '/rds', 
-  '/api/chats', // Includes /api/chats/* via startsWith
-  '/api/ec2',   // Includes /api/ec2/* 
-  '/api/s3',    // Includes /api/s3/*
-  '/api/rds',   // Includes /api/rds/*
+  '/api/chats',
+  '/api/ec2',  
+
+  '/api/s3',   
+    '/api/rds',  
+
   '/api/user/profile'
 ];
 
@@ -65,7 +67,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // --- Handle Authentication --- 
   let isValidToken = false;
   let userId = null;
 
@@ -80,7 +81,6 @@ export async function middleware(request: NextRequest) {
       console.log('Middleware: Token VALID, User ID:', userId);
     } else {
       console.log('Middleware: Invalid token payload detected.');
-      // For API routes, return 401 instead of redirecting
       if (pathname.startsWith('/api/')) {
         return new NextResponse(
           JSON.stringify({ error: 'Unauthorized' }),
@@ -93,10 +93,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // If no valid token and accessing a non-public/non-onboarding path, redirect to login
   if (!isValidToken && !onboardingPaths.some(path => pathname.startsWith(path))) {
     console.log(`Middleware: No valid token, redirecting from ${pathname} to /login`);
-    // For API routes, return 401 instead of redirecting
     if (pathname.startsWith('/api/')) {
       return new NextResponse(
         JSON.stringify({ error: 'Unauthorized' }),
@@ -106,9 +104,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // --- Handle Onboarding Redirection --- 
   if (isValidToken && onboardingPaths.some(path => pathname.startsWith(path))) {
-    // Skip profile check for save-arn endpoint to allow ARN saving
     if (pathname === '/api/user/save-arn') {
       return NextResponse.next();
     }
@@ -121,7 +117,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // --- Handle Protected Path Access Control --- 
   if (protectedPaths.some(path => pathname.startsWith(path))) {
     if (!isValidToken) {
       console.log(`Middleware: No valid token for protected path ${pathname}, redirecting to /login`);
@@ -153,16 +148,9 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Configuration for the middleware matcher
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - api/auth/logout (allow logout always)
-     */
+   
     '/((?!_next/static|_next/image|favicon.ico|api/auth/logout).*)',
   ],
 }; 
